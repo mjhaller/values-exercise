@@ -1,6 +1,6 @@
 # Core Values Exercise
 
-A phone-friendly version of the [Taproot values exercise](http://www.taproot.com/archives/37771):
+A phone-friendly version of the [Taproot values exercise](https://web.archive.org/web/20180904200552/http://www.taproot.com/archives/37771):
 
 1. **Pick** every value that resonates (search, or add your own).
 2. **Group** similar values into up to five groups (pick a group, tap values).

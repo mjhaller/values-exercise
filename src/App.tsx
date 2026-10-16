@@ -118,7 +118,7 @@ function Intro({ state, go, reset }: { state: State; go: (s: Step) => void; rese
       </div>
       <p className="credit">
         Adapted from the{' '}
-        <a href="http://www.taproot.com/archives/37771" target="_blank" rel="noreferrer">
+        <a href="https://web.archive.org/web/20180904200552/http://www.taproot.com/archives/37771" target="_blank" rel="noreferrer">
           Taproot values exercise
         </a>
         . Your answers stay on this device.
