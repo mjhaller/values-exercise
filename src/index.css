@@ -322,3 +322,7 @@ h2 { font-size: 26px; }
 .sheet-head { display: flex; justify-content: space-between; align-items: center; }
 @keyframes fade { from { opacity: 0 } }
 @keyframes up { from { transform: translateY(40px); opacity: .5 } }
+.sheet-chips { margin: 4px 0 14px; }
+.chip.static { cursor: default; }
+.chip.static:active { transform: none; }
+.sheet-actions { display: flex; flex-direction: column; gap: 10px; }

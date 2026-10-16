@@ -208,6 +208,7 @@ function Pick({ state, update, next }: StepProps) {
 function GroupStep({ state, update, next }: StepProps) {
   const [hideGrouped, setHideGrouped] = useState(false)
   const [showExample, setShowExample] = useState(false)
+  const [showUngroupedPrompt, setShowUngroupedPrompt] = useState(false)
   const groupOf = (v: string) => state.groups.findIndex((g) => g.values.includes(v))
   const ungrouped = state.selected.filter((v) => groupOf(v) === -1)
   const shown = hideGrouped ? ungrouped : state.selected
@@ -315,11 +316,33 @@ function GroupStep({ state, update, next }: StepProps) {
         <span className="count">
           <b>{state.groups.filter((g) => g.values.length).length}</b> / {MAX_GROUPS} groups
         </span>
-        <button className="btn primary" disabled={!hasGrouped} onClick={next}>
+        <button className="btn primary" disabled={!hasGrouped} onClick={() => (ungrouped.length ? setShowUngroupedPrompt(true) : next())}>
           Next: Label
         </button>
       </footer>
       {showExample && <ExampleSheet close={() => setShowExample(false)} />}
+      {showUngroupedPrompt && (
+        <UngroupedSheet
+          ungrouped={ungrouped}
+          canAddGroup={state.groups.length < MAX_GROUPS || state.groups.some((g) => g.values.length === 0)}
+          close={() => setShowUngroupedPrompt(false)}
+          groupThem={() => {
+            setShowUngroupedPrompt(false)
+            setHideGrouped(true)
+            update((s) => {
+              const empty = s.groups.findIndex((g) => g.values.length === 0)
+              if (empty >= 0) return { ...s, active: empty }
+              if (s.groups.length >= MAX_GROUPS) return s
+              return { ...s, groups: [...s.groups, newGroup()], active: s.groups.length }
+            })
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+          }}
+          skip={() => {
+            setShowUngroupedPrompt(false)
+            next()
+          }}
+        />
+      )}
     </>
   )
 }
@@ -417,6 +440,56 @@ function Results({ state, go, reset }: { state: State; go: (s: Step) => void; re
         </button>
       </footer>
     </>
+  )
+}
+
+function UngroupedSheet({
+  ungrouped,
+  canAddGroup,
+  close,
+  groupThem,
+  skip,
+}: {
+  ungrouped: string[]
+  canAddGroup: boolean
+  close: () => void
+  groupThem: () => void
+  skip: () => void
+}) {
+  const n = ungrouped.length
+  return (
+    <div className="sheet-backdrop" onClick={close}>
+      <div className="sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Ungrouped values">
+        <div className="sheet-head">
+          <h3>
+            {n} value{n === 1 ? ' is' : 's are'} still ungrouped
+          </h3>
+          <button className="icon-btn" onClick={close} aria-label="Close">
+            ×
+          </button>
+        </div>
+        <div className="chips sheet-chips">
+          {ungrouped.map((v) => (
+            <span key={v} className="chip static">
+              {v}
+            </span>
+          ))}
+        </div>
+        <p className="hint">
+          {canAddGroup
+            ? 'Start a new group and tap the ones that belong together, or skip and leave them out.'
+            : "You're at 5 groups. Add them to an existing group, or skip and leave them out."}
+        </p>
+        <div className="sheet-actions">
+          <button className="btn primary" onClick={groupThem}>
+            {canAddGroup ? 'Make a new group' : 'Add to a group'}
+          </button>
+          <button className="btn ghost" onClick={skip}>
+            Skip, leave {n === 1 ? 'it' : 'them'} out
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
 
